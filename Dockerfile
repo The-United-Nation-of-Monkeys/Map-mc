@@ -6,4 +6,10 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-RUN popd install -r requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . .
+
+RUN chmod a+x ./build/*.sh
+
+ENTRYPOINT ./build/entrypoint.sh
