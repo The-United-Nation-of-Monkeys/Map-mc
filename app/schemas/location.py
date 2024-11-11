@@ -9,6 +9,10 @@ class SBaseLocation(BaseModel):
     type: str 
     
     
-class SLocationInfo(BaseModel, SBaseLocation):
-    id: set
+class SLocationInfo(SBaseLocation):
+    id: int
+    
+    
+class SAllLocations(BaseModel):
+    locations: list["SLocationInfo"]
     

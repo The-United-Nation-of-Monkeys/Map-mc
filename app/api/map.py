@@ -1,11 +1,13 @@
 from fastapi import APIRouter, status, Depends
-from fastapi.security import HTTPBearer, HTTPBasicCredentials
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Annotated
 
-from app.repositories.location import get_location_info, add_location
+from app.repositories.location import get_location_info_db, add_location_db, get_all_locations_db, delete_location_db
 from app.api.errors import error_404
-from app.schemas.location import SLocationInfo, SBaseLocation
+from app.schemas.location import SLocationInfo, SBaseLocation, SAllLocations
 from app.config import security
+from app.api.security.permissions import permissions
+
 
 router = APIRouter(
     prefix="/map",
@@ -13,23 +15,32 @@ router = APIRouter(
 )
 
 
-@router.get("/{location}")
-async def get_location(location: str):
-    return "sosi huy"
-
-
-@router.get("/info/{location_id}")
-async def get_info(location_id: int):
-    location = await get_location_info(location_id)
+@router.get("/info/location")
+async def get_info(location_id: int) -> SLocationInfo:
+    location = await get_location_info_db(location_id)
     
     if not location:
         error_404()
         
-    return SLocationInfo(location)
+    return SLocationInfo(**location)
+
+
+@router.get("/info/location/all")
+async def get_all_locations() -> SAllLocations:
+    locations = await get_all_locations_db()
+    
+    return SAllLocations(locations=[SLocationInfo.model_validate(location, from_attributes=True) for location in locations])
 
 
 @router.post("/add/location", status_code=status.HTTP_204_NO_CONTENT)
-async def add_location(location_info: SBaseLocation, token: Annotated[HTTPBasicCredentials, Depends(security)]):
-    await add_location(location_info)
+@permissions("student")
+async def add_location(location_info: SBaseLocation, 
+                       token: Annotated[HTTPAuthorizationCredentials, Depends(security)]) -> None:
+    await add_location_db(location_info)
     
-    
+
+@router.delete("/location", status_code=status.HTTP_204_NO_CONTENT)
+@permissions(role="student")
+async def delete_location(location_id: int, 
+                          token: Annotated[HTTPAuthorizationCredentials, Depends(security)]) -> None:
+    await delete_location_db(location_id)

@@ -19,7 +19,7 @@ class DataBase(BaseModel):
     
     
 class Auth(BaseModel):
-    private_key: Path = BASE_DIR / "app" / "certs" / "jwt-public.pem"
+    public_key: Path = BASE_DIR / "app" / "certs" / "jwt-public.pem"
     algorithm: str = "RS256"
     
     

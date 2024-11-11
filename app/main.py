@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 
+from app.api.map import router as router_map
+
 app = FastAPI(
     openapi_prefix="/api/v1"
 )
 
-@app.get("/map/{location}")
-async def get_location(location: str):
-    return "sosi huy"
+app.include_router(router_map)

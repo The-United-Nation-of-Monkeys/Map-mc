@@ -8,7 +8,7 @@ from app.config import settings
 class Base(DeclarativeBase):
     pass
 
-async_engine = create_async_engine(settings.database.DATABASE_URL, echo=False)
+async_engine = create_async_engine(settings.db.url, echo=False)
 async_session_factory = async_sessionmaker(async_engine, expire_on_commit=False)
 
 async def get_session() -> AsyncGenerator:
