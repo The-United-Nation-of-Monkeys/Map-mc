@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep(5)
+sleep 5
 
 python3 -m alembic upgrade head 
 
