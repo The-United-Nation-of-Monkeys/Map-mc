@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import Annotated
+from sqlalchemy.exc import IntegrityError
 
 from app.repositories.location import get_location_info_db, add_location_db, get_all_locations_db, delete_location_db
-from app.api.errors import error_404
+from app.api.errors import error_404, error_409
 from app.schemas.location import SLocationInfo, SBaseLocation, SAllLocations
 from app.config import security
 from app.api.security.permissions import permissions
@@ -36,7 +37,11 @@ async def get_all_locations() -> SAllLocations:
 @permissions("student")
 async def add_location(location_info: SBaseLocation, 
                        token: Annotated[HTTPAuthorizationCredentials, Depends(security)]) -> None:
-    await add_location_db(location_info)
+    try:
+        await add_location_db(location_info)
+        
+    except IntegrityError:
+        error_409("already exist")
     
 
 @router.delete("/location", status_code=status.HTTP_204_NO_CONTENT)

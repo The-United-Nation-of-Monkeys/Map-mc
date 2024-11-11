@@ -17,3 +17,9 @@ def error_403(detail: str | dict | None = None):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
     else:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+    
+def error_409(detail: str | dict | None = None):
+    if detail:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=detail)
+    else:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT)

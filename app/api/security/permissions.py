@@ -10,11 +10,12 @@ def permissions(role: str):
         @wraps(func)
         async def wrapper(*args, **kwargs):
             token: str = kwargs.get("token")
+            if not token:
+                error_401()
             
             try:
                 payload = await decode(token.credentials)
             except Exception as e:
-                print(e)
                 error_401()
                 
             if payload.get("role") != role:
